@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  pipeline:
+    build: .
+    environment:
+      - user=root
+      - password=root
+      - host=db
+      - port=5432
+      - db=ny_taxi
+    depends_on:
+      - db
+    networks:
+      - pipeline-network
+    working_dir: "/files"
+    volumes:
+      - "./:/files"
+
+  db:
+    image: "postgres:15"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    networks:
+      - pipeline-network
+
+  pgAdmin:
+    image: "dpage/pgadmin4"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@root.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - "8080:80"
+    networks:
+      - pipeline-network
+    depends_on:
+      - db
+  
+
+networks:
+  pipeline-network:
